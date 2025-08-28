@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customization Options - Good Boy Custom Order Form</title>
+    
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                    ☰
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Delivery & Timeline</h1>
+            <p class="form-description">
+                Let us know your delivery preferences and timeline requirements for your custom order.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 50%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <span>Welcome</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">2</div>
+                    <span>Project</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">3</div>
+                    <span>Products</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">4</div>
+                    <span>Details</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">5</div>
+                    <span>Custom</span>
+                </div>
+            </div>
+        </div>
+
+        <form class="form-step" id="customization-form">
+            <div class="form-section">
+                <h2 class="form-section-title">Delivery Preferences</h2>
+                
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="delivery-method" class="form-label">Preferred Delivery Method</label>
+                        <select id="delivery-method" name="delivery-method" class="form-select">
+                            <option value="">Select delivery method</option>
+                            <option value="standard-shipping">Standard Shipping</option>
+                            <option value="expedited-shipping">Expedited Shipping</option>
+                            <option value="pickup">Local Pickup</option>
+                            <option value="delivery">Local Delivery</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delivery-timeline" class="form-label">Delivery Timeline</label>
+                        <select id="delivery-timeline" name="delivery-timeline" class="form-select">
+                            <option value="">Select timeline</option>
+                            <option value="4-weeks">Within 4 weeks</option>
+                            <option value="6-weeks">Within 6 weeks</option>
+                            <option value="2-months">Within 2 months</option>
+                            <option value="3-months">Within 3 months</option>
+                            <option value="4-months">Within 4 months</option>
+                            <option value="4-5-months">Within 4-5 months</option>
+                            <option value="specific-date">Specific date needed</option>
+                            <option value="flexible">Flexible timing</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="specific-date" class="form-label">Specific Date Needed (if applicable)</label>
+                    <input 
+                        type="date" 
+                        id="specific-date" 
+                        name="specific-date" 
+                        class="form-input"
+                    >
+                    <div class="form-hint">If you need your order by a specific date, please let us know so we can ensure timely delivery.</div>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">
+                    <span>←</span>
+                    Previous
+                </button>
+                <div>
+                    <span class="form-progress-text">Step 5 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="next-btn">
+                        Continue
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">Good Boy Custom</div>
+                <nav class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy Policy</a>
+                    <a href="/terms" class="footer-link">Terms of Service</a>
+                    <a href="/contact" class="footer-link">Contact</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Good Boy Custom. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/form-manager.js"></script>
+    <script src="../js/app.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('customization-form');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            // Handle previous button
+            prevBtn.addEventListener('click', function() {
+                window.location.href = 'products.html';
+            });
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Save form data
+                saveFormData();
+                
+                // Navigate to next step
+                window.location.href = 'custom-items.html';
+            });
+
+            // Auto-save functionality
+            const formElements = form.querySelectorAll('input, select, textarea');
+            const debouncedSave = debounce(saveFormData, 1000);
+            
+            formElements.forEach(element => {
+                element.addEventListener('change', debouncedSave);
+                element.addEventListener('input', debouncedSave);
+            });
+
+            function saveFormData() {
+                const formData = new FormData(form);
+                const customizationData = {};
+                
+                // Handle single-value fields
+                for (let [key, value] of formData.entries()) {
+                    if (customizationData[key]) {
+                        // Convert to array if multiple values
+                        if (!Array.isArray(customizationData[key])) {
+                            customizationData[key] = [customizationData[key]];
+                        }
+                        customizationData[key].push(value);
+                    } else {
+                        customizationData[key] = value;
+                    }
+                }
+
+                const saveData = {
+                    customization: customizationData
+                };
+
+                // Save to localStorage
+                let existingData = {};
+                try {
+                    existingData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                } catch (e) {
+                    console.error('Error loading existing form data:', e);
+                }
+
+                const updatedData = { ...existingData, ...saveData };
+                localStorage.setItem('goodboy-form-data', JSON.stringify(updatedData));
+            }
+
+            function loadSavedData() {
+                try {
+                    const savedData = JSON.parse(localStorage.getItem('goodboy-form-data'));
+                    if (savedData && savedData.customization) {
+                        const customization = savedData.customization;
+                        
+                        // Restore form values
+                        Object.keys(customization).forEach(key => {
+                            const value = customization[key];
+                            
+                            if (Array.isArray(value)) {
+                                // Handle checkboxes and multiple select
+                                value.forEach(val => {
+                                    const element = form.querySelector(`[name="${key}"][value="${val}"]`);
+                                    if (element) {
+                                        element.checked = true;
+                                    }
+                                });
+                            } else {
+                                // Handle single value inputs
+                                const element = form.querySelector(`[name="${key}"]`);
+                                if (element) {
+                                    if (element.type === 'radio' || element.type === 'checkbox') {
+                                        const specificElement = form.querySelector(`[name="${key}"][value="${value}"]`);
+                                        if (specificElement) {
+                                            specificElement.checked = true;
+                                        }
+                                    } else {
+                                        element.value = value;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+
+            // Show/hide specific date field based on delivery timeline selection
+            const deliveryTimeline = document.getElementById('delivery-timeline');
+            const specificDateGroup = document.querySelector('#specific-date').closest('.form-group');
+            
+            deliveryTimeline.addEventListener('change', function() {
+                if (this.value === 'specific-date') {
+                    specificDateGroup.style.display = 'block';
+                } else {
+                    specificDateGroup.style.display = 'none';
+                }
+            });
+
+            // Load saved data
+            loadSavedData();
+            
+            // Initial check for specific date visibility
+            if (deliveryTimeline.value !== 'specific-date') {
+                specificDateGroup.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

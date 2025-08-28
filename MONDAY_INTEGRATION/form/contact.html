@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Information - Good Boy Custom Order Form</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle">☰</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Final Contact Details</h1>
+            <p class="form-description">
+                Confirm your contact information and provide any additional details for order fulfillment.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%;"></div>
+            </div>
+        </div>
+
+        <form class="form-step" id="contact-form">
+            <div class="form-section">
+                <h2 class="form-section-title">Contact Information</h2>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="contact-email" class="form-label">Email Address *</label>
+                        <input type="email" id="contact-email" name="contact-email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-name" class="form-label">Full Name *</label>
+                        <input type="text" id="contact-name" name="contact-name" class="form-input" required>
+                    </div>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="company-name" class="form-label">Company/Organization</label>
+                        <input type="text" id="company-name" name="company-name" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="form-section-title">Delivery Address</h2>
+                <div class="form-group">
+                    <label for="address" class="form-label">Street Address</label>
+                    <input type="text" id="address" name="address" class="form-input" placeholder="123 Main Street">
+                </div>
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" id="city" name="city" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="state" class="form-label">State/Province</label>
+                        <input type="text" id="state" name="state" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="zip" class="form-label">ZIP/Postal Code</label>
+                        <input type="text" id="zip" name="zip" class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="form-section-title">Additional Information</h2>
+                <div class="form-group">
+                    <label for="final-notes" class="form-label">Final Notes or Questions</label>
+                    <textarea id="final-notes" name="final-notes" class="form-textarea" rows="4" 
+                        placeholder="Any last-minute details, questions, or special requests..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">←  Previous</button>
+                <div>
+                    <span class="form-progress-text">Step 8 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="next-btn">Review Order  →</button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/form-manager.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('contact-form');
+            const prevBtn = document.getElementById('prev-btn');
+            
+            prevBtn.addEventListener('click', () => window.location.href = 'logo-upload.html');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('contact-email').value;
+                const name = document.getElementById('contact-name').value;
+                
+                if (!email || !name) {
+                    showAlert('Please fill in all required fields.', 'error');
+                    return;
+                }
+                
+                if (!isValidEmail(email)) {
+                    showAlert('Please enter a valid email address.', 'error');
+                    return;
+                }
+                
+                saveFormData();
+                window.location.href = 'review.html';
+            });
+
+            function saveFormData() {
+                const formData = {
+                    contactInfo: {
+                        email: document.getElementById('contact-email').value,
+                        contactName: document.getElementById('contact-name').value,
+                        companyName: document.getElementById('company-name').value,
+                        phone: document.getElementById('phone').value
+                    },
+                    deliveryAddress: {
+                        address: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip: document.getElementById('zip').value
+                    },
+                    finalNotes: document.getElementById('final-notes').value
+                };
+
+                let existingData = {};
+                try {
+                    existingData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                } catch (e) {}
+
+                localStorage.setItem('goodboy-form-data', JSON.stringify({
+                    ...existingData,
+                    ...formData
+                }));
+            }
+
+            // Load saved data
+            try {
+                const savedData = JSON.parse(localStorage.getItem('goodboy-form-data'));
+                if (savedData) {
+                    if (savedData.contactInfo) {
+                        document.getElementById('contact-email').value = savedData.contactInfo.email || '';
+                        document.getElementById('contact-name').value = savedData.contactInfo.contactName || '';
+                        document.getElementById('company-name').value = savedData.contactInfo.companyName || '';
+                        document.getElementById('phone').value = savedData.contactInfo.phone || '';
+                    }
+                    if (savedData.deliveryAddress) {
+                        document.getElementById('address').value = savedData.deliveryAddress.address || '';
+                        document.getElementById('city').value = savedData.deliveryAddress.city || '';
+                        document.getElementById('state').value = savedData.deliveryAddress.state || '';
+                        document.getElementById('zip').value = savedData.deliveryAddress.zip || '';
+                    }
+                    document.getElementById('final-notes').value = savedData.finalNotes || '';
+                }
+            } catch (e) {}
+        });
+    </script>
+</body>
+</html>

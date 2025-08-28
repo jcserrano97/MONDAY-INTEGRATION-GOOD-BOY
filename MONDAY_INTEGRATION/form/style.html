@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Preference - Good Boy Custom Order Form</title>
+    
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                    ☰
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Choose Your Style</h1>
+            <p class="form-description">
+                Let us know your design preference. This helps us understand how creative and bold you want your custom items to be.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 30%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <span>Welcome</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">2</div>
+                    <span>Project</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">3</div>
+                    <span>Style</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <span>Products</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <span>Custom</span>
+                </div>
+            </div>
+        </div>
+
+        <form class="form-step" id="style-form">
+            <div class="form-section">
+                <div id="style-options">
+                    <!-- Style options will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">
+                    <span>←</span>
+                    Previous
+                </button>
+                <div>
+                    <span class="form-progress-text">Step 3 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="next-btn" disabled>
+                        Continue
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">Good Boy Custom</div>
+                <nav class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy Policy</a>
+                    <a href="/terms" class="footer-link">Terms of Service</a>
+                    <a href="/contact" class="footer-link">Contact</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Good Boy Custom. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/form-manager.js"></script>
+    <script src="../js/app.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('style-form');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const styleOptions = document.getElementById('style-options');
+            
+            let selectedStyle = null;
+
+            // Load style preferences from config
+            if (window.CONFIG && window.CONFIG.STYLE_PREFERENCES) {
+                renderStyleOptions();
+            }
+
+            // Handle previous button
+            prevBtn.addEventListener('click', function() {
+                window.location.href = 'project-type.html';
+            });
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!selectedStyle) {
+                    showAlert('Please select a style preference to continue.', 'error');
+                    return;
+                }
+                
+                // Save form data
+                saveFormData();
+                
+                // Navigate to next step
+                window.location.href = 'products.html';
+            });
+
+            function renderStyleOptions() {
+                const styles = window.CONFIG.STYLE_PREFERENCES;
+                
+                styleOptions.innerHTML = styles.map(style => `
+                    <div class="card style-card" data-style-id="${style.id}">
+                        <div class="card-header">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="font-size: 2rem;">${style.icon}</span>
+                                <div>
+                                    <h3 class="card-title">${style.title}</h3>
+                                    <p class="card-description">${style.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="feature-list">
+                                ${style.features.map(feature => `
+                                    <div class="feature-item">
+                                        <span class="feature-bullet">•</span>
+                                        ${feature}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add click handlers to style cards
+                const styleCards = styleOptions.querySelectorAll('.style-card');
+                styleCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        // Remove selection from other cards
+                        styleCards.forEach(c => c.classList.remove('selected'));
+                        
+                        // Select this card
+                        this.classList.add('selected');
+                        selectedStyle = this.dataset.styleId;
+                        
+                        // Enable continue button
+                        nextBtn.disabled = false;
+                        
+                        // Add animation
+                        this.style.transform = 'scale(1.02)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    });
+                });
+            }
+
+            function saveFormData() {
+                const styles = window.CONFIG.STYLE_PREFERENCES;
+                const selectedStyleData = styles.find(style => style.id === selectedStyle);
+
+                const formData = {
+                    stylePreference: selectedStyleData
+                };
+
+                // Save to localStorage
+                let existingData = {};
+                try {
+                    existingData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                } catch (e) {
+                    console.error('Error loading existing form data:', e);
+                }
+
+                const updatedData = { ...existingData, ...formData };
+                localStorage.setItem('goodboy-form-data', JSON.stringify(updatedData));
+            }
+
+            function loadSavedData() {
+                try {
+                    const savedData = JSON.parse(localStorage.getItem('goodboy-form-data'));
+                    if (savedData && savedData.stylePreference) {
+                        selectedStyle = savedData.stylePreference.id;
+                        
+                        // Update UI
+                        const selectedCard = styleOptions.querySelector(`[data-style-id="${selectedStyle}"]`);
+                        if (selectedCard) {
+                            selectedCard.classList.add('selected');
+                            nextBtn.disabled = false;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+
+            // Load saved data after rendering
+            setTimeout(loadSavedData, 100);
+        });
+    </script>
+</body>
+</html>
