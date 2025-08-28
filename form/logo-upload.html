@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Upload - Good Boy Custom Order Form</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle">☰</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Upload Your Logo (Optional)</h1>
+            <p class="form-description">
+                Upload your logo files if you have them ready. We accept PNG, JPG, SVG, and PDF files. You can also skip this step and provide them later.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%;"></div>
+            </div>
+        </div>
+
+        <form class="form-step" id="logo-upload-form">
+            <div class="form-section">
+                <h2 class="form-section-title">Upload Files</h2>
+                <div class="file-upload" id="file-upload-zone">
+                    <div class="file-upload-icon">📁</div>
+                    <div class="file-upload-text">Drag and drop files here, or click to browse</div>
+                    <div class="file-upload-hint">Supported formats: PNG, JPG, SVG, PDF (max 15MB each)</div>
+                </div>
+                <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.svg,.pdf" style="display: none;">
+                <div class="uploaded-files" id="uploaded-files-list"></div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">←  Previous</button>
+                <div>
+                    <span class="form-progress-text">Step 7 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="next-btn">Continue  →</button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('logo-upload-form');
+            const prevBtn = document.getElementById('prev-btn');
+            const fileUploadZone = document.getElementById('file-upload-zone');
+            const fileInput = document.getElementById('file-input');
+            const uploadedFilesList = document.getElementById('uploaded-files-list');
+            let uploadedFiles = [];
+
+            prevBtn.addEventListener('click', () => window.location.href = 'custom-items.html');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveFormData();
+                window.location.href = 'review.html';
+            });
+
+            fileUploadZone.addEventListener('click', () => fileInput.click());
+            
+            fileUploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadZone.classList.add('dragover');
+            });
+            
+            fileUploadZone.addEventListener('dragleave', () => {
+                fileUploadZone.classList.remove('dragover');
+            });
+            
+            fileUploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadZone.classList.remove('dragover');
+                handleFiles(Array.from(e.dataTransfer.files));
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(Array.from(e.target.files));
+            });
+
+            function handleFiles(files) {
+                files.forEach(file => {
+                    if (validateFile(file)) {
+                        const fileData = {
+                            id: Date.now() + Math.random(),
+                            name: file.name,
+                            size: file.size,
+                            type: file.type,
+                            status: 'uploaded'
+                        };
+                        uploadedFiles.push(fileData);
+                        addFileToList(fileData);
+                    }
+                });
+                saveFormData();
+            }
+
+            function validateFile(file) {
+                const maxSize = 15 * 1024 * 1024; // 15MB
+                const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'application/pdf'];
+                
+                if (file.size > maxSize) {
+                    showAlert(`${file.name} is too large. Maximum size is 15MB.`, 'error');
+                    return false;
+                }
+                
+                if (!allowedTypes.includes(file.type)) {
+                    showAlert(`${file.name} is not a supported file type.`, 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+
+            function addFileToList(fileData) {
+                const fileElement = document.createElement('div');
+                fileElement.className = 'file-item';
+                fileElement.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon">${getFileIcon(fileData.type)}</div>
+                        <div class="file-details">
+                            <div class="file-name">${fileData.name}</div>
+                            <div class="file-meta">${formatFileSize(fileData.size)} • ${fileData.type}</div>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button type="button" class="btn-remove" onclick="removeFile('${fileData.id}')">Remove</button>
+                    </div>
+                `;
+                uploadedFilesList.appendChild(fileElement);
+            }
+
+            window.removeFile = function(fileId) {
+                uploadedFiles = uploadedFiles.filter(f => f.id !== fileId);
+                const fileElement = document.querySelector(`[onclick="removeFile('${fileId}')"]`).closest('.file-item');
+                fileElement.remove();
+                saveFormData();
+            };
+
+            function getFileIcon(type) {
+                if (type.startsWith('image/')) return '🖼️';
+                if (type === 'application/pdf') return '📄';
+                return '📁';
+            }
+
+            function saveFormData() {
+                let existingData = {};
+                try {
+                    existingData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                } catch (e) {}
+
+                localStorage.setItem('goodboy-form-data', JSON.stringify({
+                    ...existingData,
+                    uploadedFiles: uploadedFiles
+                }));
+            }
+
+            // Load saved files
+            try {
+                const savedData = JSON.parse(localStorage.getItem('goodboy-form-data'));
+                if (savedData?.uploadedFiles) {
+                    uploadedFiles = savedData.uploadedFiles;
+                    uploadedFiles.forEach(addFileToList);
+                }
+            } catch (e) {}
+        });
+    </script>
+</body>
+</html>

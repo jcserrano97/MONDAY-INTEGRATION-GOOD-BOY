@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Type - Good Boy Custom Order Form</title>
+    
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                    ☰
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">What Type of Project?</h1>
+            <p class="form-description">
+                Help us understand your project so we can recommend the best products and services for your needs.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 20%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <span>Welcome</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">2</div>
+                    <span>Project</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <span>Products</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <span>Details</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <span>Custom</span>
+                </div>
+            </div>
+        </div>
+
+        <form class="form-step" id="project-type-form">
+            <div class="form-section">
+                <h2 class="form-section-title">Select Your Project Type</h2>
+                <p class="form-section-description">
+                    Choose the option that best describes your custom apparel needs. This helps us tailor our recommendations to your specific use case.
+                </p>
+
+                <div class="project-type-grid" id="project-type-grid">
+                    <!-- Project types will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="form-section-title">Additional Information</h2>
+                <div class="form-group">
+                    <label for="project-description" class="form-label">Tell us more about your project (optional)</label>
+                    <textarea 
+                        id="project-description" 
+                        name="project-description" 
+                        class="form-textarea" 
+                        placeholder="Describe your project goals, timeline, quantity needed, or any special requirements..."
+                        rows="4"
+                    ></textarea>
+                    <div class="form-hint">This helps us better understand your needs and provide more accurate recommendations.</div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label for="timeline" class="form-label">When do you need this completed?</label>
+                        <select id="timeline" name="timeline" class="form-select">
+                            <option value="">Select timeline</option>
+                            <option value="rush">ASAP (Rush order)</option>
+                            <option value="1-2-weeks">1-2 weeks</option>
+                            <option value="2-4-weeks">2-4 weeks</option>
+                            <option value="1-2-months">1-2 months</option>
+                            <option value="flexible">Flexible timeline</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="approximate-quantity" class="form-label">Approximate quantity needed</label>
+                        <select id="approximate-quantity" name="approximate-quantity" class="form-select">
+                            <option value="">Select quantity range</option>
+                            <option value="1-10">1-10 pieces</option>
+                            <option value="11-25">11-25 pieces</option>
+                            <option value="26-50">26-50 pieces</option>
+                            <option value="51-100">51-100 pieces</option>
+                            <option value="100+">100+ pieces</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">
+                    <span>←</span>
+                    Previous
+                </button>
+                <div>
+                    <span class="form-progress-text">Step 2 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="next-btn" disabled>
+                        Continue
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">Good Boy Custom</div>
+                <nav class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy Policy</a>
+                    <a href="/terms" class="footer-link">Terms of Service</a>
+                    <a href="/contact" class="footer-link">Contact</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Good Boy Custom. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/form-manager.js"></script>
+    <script src="../js/app.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('project-type-form');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const projectTypeGrid = document.getElementById('project-type-grid');
+            let selectedProjectType = null;
+
+            // Load project types from config
+            if (window.CONFIG && window.CONFIG.PROJECT_TYPES) {
+                renderProjectTypes();
+            }
+
+            // Handle previous button
+            prevBtn.addEventListener('click', function() {
+                window.location.href = 'welcome.html';
+            });
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (!selectedProjectType) {
+                    showAlert('Please select a project type to continue.', 'error');
+                    return;
+                }
+                
+                // Save form data
+                saveFormData();
+                
+                // Navigate to next step
+                window.location.href = 'style.html';
+            });
+
+            function renderProjectTypes() {
+                const projectTypes = window.CONFIG.PROJECT_TYPES;
+                
+                projectTypeGrid.innerHTML = projectTypes.map(type => `
+                    <div class="project-type-card" data-type="${type.id}">
+                        <span class="project-type-icon">${type.icon}</span>
+                        <h3 class="project-type-title">${type.title}</h3>
+                        <p class="project-type-description">${type.description}</p>
+                        <ul class="project-type-features">
+                            ${type.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                    </div>
+                `).join('');
+
+                // Add click handlers
+                const cards = projectTypeGrid.querySelectorAll('.project-type-card');
+                cards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        // Remove selection from other cards
+                        cards.forEach(c => c.classList.remove('selected'));
+                        
+                        // Select this card
+                        this.classList.add('selected');
+                        selectedProjectType = this.dataset.type;
+                        
+                        // Enable continue button
+                        nextBtn.disabled = false;
+                        
+                        // Add animation
+                        this.style.transform = 'scale(1.02)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    });
+                });
+            }
+
+            function saveFormData() {
+                const formData = {
+                    projectType: selectedProjectType,
+                    projectDescription: document.getElementById('project-description').value,
+                    timeline: document.getElementById('timeline').value,
+                    approximateQuantity: document.getElementById('approximate-quantity').value
+                };
+
+                // Save to localStorage
+                let existingData = {};
+                try {
+                    existingData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                } catch (e) {
+                    console.error('Error loading existing form data:', e);
+                }
+
+                const updatedData = { ...existingData, ...formData };
+                localStorage.setItem('goodboy-form-data', JSON.stringify(updatedData));
+            }
+
+            function loadSavedData() {
+                try {
+                    const savedData = JSON.parse(localStorage.getItem('goodboy-form-data'));
+                    if (savedData) {
+                        // Restore project type selection
+                        if (savedData.projectType) {
+                            const card = projectTypeGrid.querySelector(`[data-type="${savedData.projectType}"]`);
+                            if (card) {
+                                card.classList.add('selected');
+                                selectedProjectType = savedData.projectType;
+                                nextBtn.disabled = false;
+                            }
+                        }
+                        
+                        // Restore form fields
+                        if (savedData.projectDescription) {
+                            document.getElementById('project-description').value = savedData.projectDescription;
+                        }
+                        if (savedData.timeline) {
+                            document.getElementById('timeline').value = savedData.timeline;
+                        }
+                        if (savedData.approximateQuantity) {
+                            document.getElementById('approximate-quantity').value = savedData.approximateQuantity;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+
+            // Load saved data after rendering project types
+            setTimeout(loadSavedData, 100);
+
+            // Auto-save on input
+            const inputs = form.querySelectorAll('input, select, textarea');
+            const debouncedSave = debounce(saveFormData, 1000);
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', debouncedSave);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Review - Good Boy Custom Order Form</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle">☰</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Review Your Order</h1>
+            <p class="form-description">
+                Please review all details before submitting your custom apparel request.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%;"></div>
+            </div>
+        </div>
+
+        <form class="form-step" id="review-form">
+            <div id="review-content">
+                <!-- Review content will be populated by JavaScript -->
+            </div>
+
+            <div class="review-summary">
+                <h3 class="review-summary-title">Order Summary</h3>
+                <div id="order-summary">
+                    <!-- Order summary will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="alert alert-info">
+                    <span>ℹ️</span>
+                    <span>
+                        This is a custom quote request. After submission, our team will review your requirements 
+                        and provide a detailed quote with pricing and timeline within 1-2 business days.
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">←  Previous</button>
+                <div>
+                    <span class="form-progress-text">Step 9 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">Submit Order Request  →</button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/form-manager.js"></script>
+    <script src="../js/monday-api.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('review-form');
+            const prevBtn = document.getElementById('prev-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            const reviewContent = document.getElementById('review-content');
+            const orderSummary = document.getElementById('order-summary');
+            
+            let formData = {};
+
+            prevBtn.addEventListener('click', () => window.location.href = 'contact.html');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitOrder();
+            });
+
+            function loadOrderReview() {
+                try {
+                    formData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                    displayReviewContent();
+                    displayOrderSummary();
+                } catch (e) {
+                    console.error('Error loading order data:', e);
+                    showAlert('Error loading order data. Please try again.', 'error');
+                }
+            }
+
+            function displayReviewContent() {
+                const { contactInfo = {}, projectType, selectedProducts = [], customItems = [], customization = {} } = formData;
+                
+                reviewContent.innerHTML = `
+                    <div class="review-section">
+                        <h3>Contact Information</h3>
+                        <div class="review-item">
+                            <p><strong>Name:</strong> ${contactInfo.contactName || 'Not provided'}</p>
+                            <p><strong>Email:</strong> ${contactInfo.email || 'Not provided'}</p>
+                            ${contactInfo.companyName ? `<p><strong>Company:</strong> ${contactInfo.companyName}</p>` : ''}
+                            ${contactInfo.phone ? `<p><strong>Phone:</strong> ${contactInfo.phone}</p>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Project Details</h3>
+                        <div class="review-item">
+                            <p><strong>Project Type:</strong> ${getProjectTypeName(projectType)}</p>
+                            ${formData.projectDescription ? `<p><strong>Description:</strong> ${formData.projectDescription}</p>` : ''}
+                            ${formData.timeline ? `<p><strong>Timeline:</strong> ${formData.timeline}</p>` : ''}
+                            ${formData.approximateQuantity ? `<p><strong>Quantity:</strong> ${formData.approximateQuantity}</p>` : ''}
+                        </div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Selected Products (${selectedProducts.length})</h3>
+                        ${selectedProducts.map(product => `
+                            <div class="review-item">
+                                <div class="review-item-header">
+                                    <span class="review-item-title">${product.icon} ${product.name}</span>
+                                    <span class="review-item-price">${product.price}</span>
+                                </div>
+                                <div class="review-item-details">
+                                    Category: ${product.categoryName || product.category}
+                                    ${getProductDetailsText(product.id)}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    ${customItems.length > 0 ? `
+                        <div class="review-section">
+                            <h3>Custom Items (${customItems.length})</h3>
+                            ${customItems.map(item => `
+                                <div class="review-item">
+                                    <p><strong>Description:</strong> ${item.description}</p>
+                                    <p><strong>Creative Freedom:</strong> ${item.creativeFreedom ? 'Yes' : 'No'}</p>
+                                    ${item.requirements ? `<p><strong>Requirements:</strong> ${item.requirements}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${formData.uploadedFiles && formData.uploadedFiles.length > 0 ? `
+                        <div class="review-section">
+                            <h3>Uploaded Files (${formData.uploadedFiles.length})</h3>
+                            <div class="review-item">
+                                ${formData.uploadedFiles.map(file => `
+                                    <p>📁 ${file.name} (${formatFileSize(file.size)})</p>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="review-section">
+                        <h3>Customization Preferences</h3>
+                        <div class="review-item">
+                            ${customization['logo-style'] ? `<p><strong>Logo Style:</strong> ${customization['logo-style']}</p>` : ''}
+                            ${customization['logo-size'] ? `<p><strong>Logo Size:</strong> ${customization['logo-size']}</p>` : ''}
+                            ${customization['budget-range'] ? `<p><strong>Budget Range:</strong> ${customization['budget-range']}</p>` : ''}
+                            ${customization['delivery-method'] ? `<p><strong>Delivery Method:</strong> ${customization['delivery-method']}</p>` : ''}
+                            ${customization['delivery-timeline'] ? `<p><strong>Timeline:</strong> ${customization['delivery-timeline']}</p>` : ''}
+                            ${customization['special-instructions'] ? `<p><strong>Special Instructions:</strong> ${customization['special-instructions']}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function displayOrderSummary() {
+                const { selectedProducts = [], customItems = [] } = formData;
+                const totalProducts = selectedProducts.length;
+                const totalCustomItems = customItems.length;
+                const totalFiles = (formData.uploadedFiles || []).length;
+                
+                orderSummary.innerHTML = `
+                    <div class="review-summary-item">
+                        <span>Products Selected:</span>
+                        <span>${totalProducts}</span>
+                    </div>
+                    <div class="review-summary-item">
+                        <span>Custom Items:</span>
+                        <span>${totalCustomItems}</span>
+                    </div>
+                    <div class="review-summary-item">
+                        <span>Files Uploaded:</span>
+                        <span>${totalFiles}</span>
+                    </div>
+                    <div class="review-summary-total">
+                        <span>Status:</span>
+                        <span>Quote Request</span>
+                    </div>
+                `;
+            }
+
+            function getProjectTypeName(projectTypeId) {
+                if (!window.CONFIG?.PROJECT_TYPES) return projectTypeId || 'Not specified';
+                const projectType = window.CONFIG.PROJECT_TYPES.find(type => type.id === projectTypeId);
+                return projectType ? projectType.title : (projectTypeId || 'Not specified');
+            }
+
+            function getProductDetailsText(productId) {
+                const details = formData.productDetails?.[productId];
+                if (!details) return '';
+                
+                let text = '';
+                
+                // Show size quantities if available
+                if (details.sizeQuantities) {
+                    const sizeQtyText = Object.entries(details.sizeQuantities)
+                        .map(([size, qty]) => `${size}: ${qty}`)
+                        .join(', ');
+                    text += ` • Sizes: ${sizeQtyText}`;
+                } else if (details.sizes?.length) {
+                    text += ` • Sizes: ${details.sizes.join(', ')}`;
+                }
+                
+                // Show total quantity
+                if (details.totalQuantity) text += ` • Total Qty: ${details.totalQuantity}`;
+                else if (details.quantity) text += ` • Qty: ${details.quantity}`;
+                
+                if (details.colors?.length) text += ` • Colors: ${details.colors.join(', ')}`;
+                if (details.logoPlacement) text += ` • Logo: ${details.logoPlacement}`;
+                
+                return text;
+            }
+
+            async function submitOrder() {
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span> Submitting...';
+                
+                try {
+                    // Initialize Monday.com API
+                    const mondayAPI = new MondayAPI();
+                    
+                    // Submit to Monday.com
+                    const result = await mondayAPI.submitOrder(formData);
+                    
+                    if (result.success) {
+                        // Generate submission ID
+                        const submissionId = 'GBC-' + Date.now();
+                        
+                        // Update form data with submission info
+                        formData.submissionId = submissionId;
+                        formData.status = 'submitted';
+                        formData.submittedAt = new Date().toISOString();
+                        formData.mondayProjectId = result.projectId;
+                        formData.mondayProjectUrl = result.projectUrl;
+                        
+                        // Save updated data
+                        localStorage.setItem('goodboy-form-data', JSON.stringify(formData));
+                        
+                        // Redirect to success page
+                        window.location.href = 'success.html';
+                    } else {
+                        throw new Error(result.error || 'Failed to submit order');
+                    }
+                } catch (error) {
+                    console.error('Submission failed:', error);
+                    
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Submit Order <span>→</span>';
+                    
+                    // Show error message
+                    alert(`Failed to submit order: ${error.message}\n\nPlease try again or contact support if the issue persists.`);
+                }
+            }
+
+            // Initialize page
+            loadOrderReview();
+        });
+    </script>
+</body>
+</html>

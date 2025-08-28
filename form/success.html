@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Submitted - Good Boy Custom</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle">☰</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <div class="success-icon">✅</div>
+            <h1 class="form-title success-title">Order Request Submitted!</h1>
+            <p class="form-description success-description">
+                Thank you for choosing Good Boy Custom. Your custom apparel request has been received 
+                and our team will review it shortly.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="form-step">
+            <div class="success-details" id="success-details">
+                <!-- Success details will be populated by JavaScript -->
+            </div>
+
+            <div class="form-section">
+                <h2 class="form-section-title">What Happens Next?</h2>
+                <div class="grid grid-3">
+                    <div class="feature-card">
+                        <span class="feature-icon">📋</span>
+                        <h3 class="feature-title">Review Process</h3>
+                        <p class="feature-description">
+                            Our team will carefully review your requirements and product selections.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">💰</span>
+                        <h3 class="feature-title">Quote Creation</h3>
+                        <p class="feature-description">
+                            We'll prepare a detailed quote with pricing, timeline, and product mockups.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">📞</span>
+                        <h3 class="feature-title">Contact & Approval</h3>
+                        <p class="feature-description">
+                            We'll reach out within 1-2 business days to discuss your project.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <a href="../index.html" class="btn btn-primary">Back to Homepage</a>
+                <button type="button" class="btn btn-outline" id="new-order-btn">Start New Order</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">Good Boy Custom</div>
+                <nav class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy Policy</a>
+                    <a href="/terms" class="footer-link">Terms of Service</a>
+                    <a href="/contact" class="footer-link">Contact</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Good Boy Custom. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const successDetails = document.getElementById('success-details');
+            const newOrderBtn = document.getElementById('new-order-btn');
+            
+            // Load submission details
+            loadSubmissionDetails();
+            
+            // Handle new order button
+            newOrderBtn.addEventListener('click', function() {
+                if (confirm('This will clear your current order data. Are you sure you want to start a new order?')) {
+                    localStorage.removeItem('goodboy-form-data');
+                    window.location.href = 'welcome.html';
+                }
+            });
+
+            function loadSubmissionDetails() {
+                try {
+                    const formData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                    const { 
+                        submissionId, 
+                        contactInfo = {}, 
+                        selectedProducts = [], 
+                        customItems = [],
+                        submittedAt 
+                    } = formData;
+                    
+                    const submissionDate = submittedAt ? new Date(submittedAt).toLocaleDateString() : new Date().toLocaleDateString();
+                    const submissionTime = submittedAt ? new Date(submittedAt).toLocaleTimeString() : new Date().toLocaleTimeString();
+                    
+                    successDetails.innerHTML = `
+                        <h3>Order Details</h3>
+                        <div class="review-item">
+                            <p><strong>Order ID:</strong> ${submissionId || 'GBC-' + Date.now()}</p>
+                            <p><strong>Submitted:</strong> ${submissionDate} at ${submissionTime}</p>
+                            <p><strong>Contact Email:</strong> ${contactInfo.email || 'Not provided'}</p>
+                            <p><strong>Products Selected:</strong> ${selectedProducts.length}</p>
+                            <p><strong>Custom Items:</strong> ${customItems.length}</p>
+                        </div>
+                        
+                        <div class="alert alert-success" style="margin-top: 1.5rem;">
+                            <span>✅</span>
+                            <span>
+                                A confirmation email will be sent to <strong>${contactInfo.email || 'your email'}</strong> 
+                                with a copy of your request details.
+                            </span>
+                        </div>
+                    `;
+                    
+                    // Add some celebration animation
+                    setTimeout(() => {
+                        document.querySelector('.success-icon').style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            document.querySelector('.success-icon').style.transform = 'scale(1)';
+                        }, 300);
+                    }, 500);
+                    
+                } catch (e) {
+                    console.error('Error loading submission details:', e);
+                    successDetails.innerHTML = `
+                        <h3>Order Submitted Successfully</h3>
+                        <div class="review-item">
+                            <p>Your custom apparel request has been submitted and our team will be in touch soon.</p>
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

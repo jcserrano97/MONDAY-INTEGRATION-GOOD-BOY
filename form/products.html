@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Selection - Good Boy Custom Order Form</title>
+    
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/form.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="../index.html" class="logo">Good Boy Custom</a>
+                <ul class="nav-menu">
+                    <li><a href="../index.html#features" class="nav-link">Features</a></li>
+                    <li><a href="../index.html#process" class="nav-link">Process</a></li>
+                    <li><a href="../index.html#products" class="nav-link">Products</a></li>
+                </ul>
+                <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+                    ☰
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="form-container">
+        <div class="form-header">
+            <h1 class="form-title">Choose Your Products</h1>
+            <p class="form-description">
+                Select the custom products you're interested in. You can choose multiple items to get a comprehensive quote.
+            </p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%;"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-number">1</div>
+                    <span>Welcome</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">2</div>
+                    <span>Project</span>
+                </div>
+                <div class="step completed">
+                    <div class="step-number">3</div>
+                    <span>Style</span>
+                </div>
+                <div class="step active">
+                    <div class="step-number">4</div>
+                    <span>Products</span>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <span>Custom</span>
+                </div>
+            </div>
+        </div>
+
+        <form class="form-step" id="products-form">
+            <div id="custom-products">
+                <!-- Custom products will be populated by JavaScript -->
+            </div>
+
+            <div class="form-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Selected Products</h3>
+                        <p class="card-description">Review your selections below</p>
+                    </div>
+                    <div class="card-body">
+                        <div id="selected-products-summary">
+                            <p class="text-secondary">No products selected yet. Please select products above.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="btn btn-ghost" id="prev-btn">
+                    <span>←</span>
+                    Previous
+                </button>
+                <div>
+                    <span class="form-progress-text">Step 4 of 9</span>
+                    <button type="submit" class="btn btn-primary" id="next-btn" disabled>
+                        Continue
+                        <span>→</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">Good Boy Custom</div>
+                <nav class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy Policy</a>
+                    <a href="/terms" class="footer-link">Terms of Service</a>
+                    <a href="/contact" class="footer-link">Contact</a>
+                </nav>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Good Boy Custom. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../config/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/form-manager.js"></script>
+    <script src="../js/app.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('products-form');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const customProducts = document.getElementById('custom-products');
+            const selectedProductsSummary = document.getElementById('selected-products-summary');
+            
+            let selectedProducts = new Set();
+
+            // Load custom products from config
+            if (window.CONFIG && window.CONFIG.CUSTOM_PRODUCTS) {
+                renderProducts();
+            }
+
+            // Handle previous button
+            prevBtn.addEventListener('click', function() {
+                window.location.href = 'style.html';
+            });
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (selectedProducts.size === 0) {
+                    showAlert('Please select at least one product to continue.', 'error');
+                    return;
+                }
+                
+                // Save form data
+                saveFormData();
+                
+                // Navigate to next step
+                window.location.href = 'customization.html';
+            });
+
+            function renderProducts() {
+                const products = window.CONFIG.CUSTOM_PRODUCTS;
+
+                customProducts.innerHTML = `
+                    <div class="form-section">
+                        <div class="product-grid">
+                            ${products.map(product => `
+                                <div class="product-card ${selectedProducts.has(product.id) ? 'selected' : ''}" 
+                                     data-product-id="${product.id}">
+                                    <div class="product-image-container">
+                                        <img src="${product.image}" alt="${product.name}" class="product-image" />
+                                    </div>
+                                    <div class="product-content">
+                                        <span class="product-category">${product.category}</span>
+                                        <h3 class="product-name">${product.name}</h3>
+                                        <p class="product-description">${product.description}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                // Add click handlers to product cards
+                const productCards = customProducts.querySelectorAll('.product-card');
+                productCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        const productId = this.dataset.productId;
+                        
+                        if (selectedProducts.has(productId)) {
+                            // Deselect product
+                            selectedProducts.delete(productId);
+                            this.classList.remove('selected');
+                        } else {
+                            // Select product
+                            selectedProducts.add(productId);
+                            this.classList.add('selected');
+                        }
+                        
+                        updateSelectedProductsSummary();
+                        updateContinueButton();
+                        
+                        // Add animation
+                        this.style.transform = 'scale(1.02)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    });
+                });
+            }
+
+            function updateSelectedProductsSummary() {
+                if (selectedProducts.size === 0) {
+                    selectedProductsSummary.innerHTML = '<p class="text-secondary">No products selected yet. Please select products above.</p>';
+                    return;
+                }
+
+                const products = window.CONFIG.CUSTOM_PRODUCTS;
+                const selectedProductsData = [];
+                
+                // Get product data for selected products
+                products.forEach(product => {
+                    if (selectedProducts.has(product.id)) {
+                        selectedProductsData.push(product);
+                    }
+                });
+
+                selectedProductsSummary.innerHTML = `
+                    <div class="grid" style="gap: 1rem;">
+                        ${selectedProductsData.map(product => `
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: var(--bg-secondary); border-radius: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <span style="font-size: 1.5rem;">${product.icon}</span>
+                                    <div>
+                                        <div style="font-weight: 600;">${product.name}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary);">${product.category}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top: 1rem; text-align: center; color: var(--text-secondary); font-size: 0.875rem;">
+                        ${selectedProducts.size} product${selectedProducts.size !== 1 ? 's' : ''} selected
+                    </div>
+                `;
+            }
+
+            function updateContinueButton() {
+                nextBtn.disabled = selectedProducts.size === 0;
+            }
+
+            function saveFormData() {
+                const products = window.CONFIG.CUSTOM_PRODUCTS;
+                const selectedProductsData = [];
+                
+                // Get full product data for selected products
+                products.forEach(product => {
+                    if (selectedProducts.has(product.id)) {
+                        selectedProductsData.push({
+                            id: product.id,
+                            name: product.name,
+                            description: product.description,
+                            category: product.category,
+                            image: product.image,
+                            icon: product.icon
+                        });
+                    }
+                });
+
+                const formData = {
+                    selectedProducts: selectedProductsData
+                };
+
+                // Save to localStorage
+                let existingData = {};
+                try {
+                    existingData = JSON.parse(localStorage.getItem('goodboy-form-data')) || {};
+                } catch (e) {
+                    console.error('Error loading existing form data:', e);
+                }
+
+                const updatedData = { ...existingData, ...formData };
+                localStorage.setItem('goodboy-form-data', JSON.stringify(updatedData));
+            }
+
+            function loadSavedData() {
+                try {
+                    const savedData = JSON.parse(localStorage.getItem('goodboy-form-data'));
+                    if (savedData && savedData.selectedProducts) {
+                        // Restore selected products
+                        savedData.selectedProducts.forEach(product => {
+                            selectedProducts.add(product.id);
+                        });
+                        
+                        // Update UI
+                        renderProducts();
+                        updateSelectedProductsSummary();
+                        updateContinueButton();
+                    }
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+
+            // Load saved data after rendering products
+            setTimeout(loadSavedData, 100);
+        });
+    </script>
+</body>
+</html>
